@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+</head>
+
+<body>
+
+    <div class="draggable-container">
+        <h1 class="title">Pick from here</h1>
+        <p class="shallow-draggable" draggable="true">1</p>
+        <p class="shallow-draggable" draggable="true">2</p>
+    </div>
+    <div class="draggable-container">
+        <h1 class="title">Put it here !!!</h1>
+        <p class="shallow-draggable" draggable="true">3</p>
+        <p class="shallow-draggable" draggable="true">4</p>
+    </div>
+
+
+    <script>
+
+        const draggbles = document.querySelectorAll(".shallow-draggable")
+        const containers = document.querySelectorAll(".draggable-container")
+
+        draggbles.forEach((draggble) => {
+            //for start dragging costing opacity
+            draggble.addEventListener("dragstart", () => {
+                draggble.classList.add("dragging")
+            })
+
+            //for end the dragging opacity costing
+            draggble.addEventListener("dragend", () => {
+                draggble.classList.remove("dragging")
+            })
+        })
+        //shit
+        containers.forEach((container) => {
+            container.addEventListener("dragover", function (e) {
+                e.preventDefault()
+                const afterElement = dragAfterElement(container, e.clientY)
+                const dragging = document.querySelector(".dragging")
+                if (afterElement == null) {
+                    container.appendChild(dragging)
+                } else {
+                    container.insertBefore(dragging, afterElement)
+                }
+            })
+        })
+
+        function dragAfterElement(container, y) {
+            const draggbleElements = [...container.querySelectorAll(".shallow-draggable:not(.dragging)")]
+
+            return draggbleElements.reduce(
+                (closest, child) => {
+                    const box = child.getBoundingClientRect()
+                    const offset = y - box.top - box.height / 2
+                    if (offset < 0 && offset > closest.offset) {
+                        return { offset: offset, element: child }
+                    } else {
+                        return closest
+                    }
+                },
+                { offset: Number.NEGATIVE_INFINITY }
+            ).element
+        }
+
+
+
+    </script>
+
+</body>
+
+</html>
